@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KmaxRush - Admin Panel</title>
-<style>
+    <style>
         :root {
             --yt-red: #ff0000;
             --yt-bg: #0f0f0f;
@@ -33,10 +33,10 @@
         .btn {
             padding: 10px 20px; border-radius: var(--btn-radius); border: none; cursor: pointer;
             font-weight: 600; font-size: 0.9rem; transition: all 0.3s; font-family: inherit;
+            display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
         }
         .btn-add { background: var(--yt-red); color: #fff; }
-        .btn-add:hover { background: #ff2222; }
-        .btn-visitor { background: transparent; border: 2px solid var(--yt-border); color: #fff; text-decoration:none; }
+        .btn-visitor { background: transparent; border: 2px solid var(--yt-border); color: #fff; }
         .btn-visitor:hover { border-color: var(--yt-red); color: var(--yt-red); }
         .search-section { margin: 24px 0; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
         .search-input-wrap { flex:1; min-width:250px; position:relative; }
@@ -88,116 +88,138 @@
         @keyframes toastOut { from{opacity:1;} to{opacity:0; transform:translateX(-50%) translateY(30px);} }
         .footer { text-align:center; padding:24px; color:var(--yt-text-secondary); border-top:1px solid var(--yt-border); margin-top:20px; }
         .footer a { color:var(--yt-red); text-decoration:none; }
-        @media (max-width:768px) {
-            .header-inner { flex-direction:column; }
-            .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-        }
-</style>
-  </head>
-  <body>
+    </style>
+</head>
+<body>
     <header class="header">
-	  <div class="container header-inner">
-		<div class="logo-area">
-		  <div class="logo-icon">KR</div>
-		  <div class="logo-text">
-			<h1>KmaxRush</h1>
-			<span class="subtitle">🔧 Admin Panel</span>
-		  </div>
-		</div>
-		<div class="header-actions">
-		  <a href="index.html" class="btn btn-visitor">👀 View Public Site</a>
-		  <button class="btn btn-add" onclick="openAddModal()">＋ Add Product</button>
-		</div>
-	  </div>
+        <div class="container header-inner">
+            <div class="logo-area">
+                <div class="logo-icon">KR</div>
+                <div class="logo-text">
+                    <h1>KmaxRush</h1>
+                    <span class="subtitle">🔧 Admin Panel</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-visitor">👀 View Public Site</a>
+                <button class="btn btn-add" onclick="openAddModal()">＋ Add Product</button>
+            </div>
+        </div>
     </header>
 
     <main class="container">
-	  <div class="search-section">
-		<div class="search-input-wrap">
-		  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-		  <input type="text" class="search-input" id="searchInput" placeholder="Search products..." oninput="renderProducts()">
-		</div>
-		<select class="category-filter" id="categoryFilter" onchange="renderProducts()">
-		  <option value="all">📂 All Categories</option>
-		  <option value="tech">💻 Tech & Gadgets</option>
-		  <option value="lifestyle">🌟 Lifestyle</option>
-		  <option value="gaming">🎮 Gaming</option>
-		  <option value="accessories">🎧 Accessories</option>
-		  <option value="other">📦 Other</option>
-		</select>
-		<span id="productCount" style="color:#aaa;">0 products</span>
-	  </div>
-	  <div class="product-grid" id="productGrid"></div>
+        <div class="search-section">
+            <div class="search-input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search products..." oninput="renderProducts()">
+            </div>
+            <select class="category-filter" id="categoryFilter" onchange="renderProducts()">
+                <option value="all">📂 All Categories</option>
+                <option value="tech">💻 Tech & Gadgets</option>
+                <option value="lifestyle">🌟 Lifestyle</option>
+                <option value="gaming">🎮 Gaming</option>
+                <option value="accessories">🎧 Accessories</option>
+                <option value="other">📦 Other</option>
+            </select>
+            <span id="productCount" style="color:#aaa;">0 products</span>
+        </div>
+        <div class="product-grid" id="productGrid"></div>
     </main>
 
     <!-- Modal for Add/Edit -->
-    <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
-	  <div class="modal">
-		<h2 id="modalTitle">➕ Add Product</h2>
-		<form id="productForm" onsubmit="saveProduct(event)">
-		  <input type="hidden" id="productId">
-		  <div class="form-group"><label>Product Name *</label><input type="text" id="prodName" required></div>
-		  <div class="form-group"><label>Description</label><textarea id="prodDesc" rows="3"></textarea></div>
-		  <div class="form-group"><label>Price</label><input type="text" id="prodPrice" placeholder="e.g. $49.99"></div>
-		  <div class="form-group"><label>Image URL</label><input type="url" id="prodImage" oninput="previewImage()"></div>
-		  <div class="form-group"><label>Buy Link *</label><input type="url" id="prodLink" required></div>
-		  <div class="form-group"><label>Category</label>
-			<select id="prodCategory">
-			  <option value="tech">💻 Tech & Gadgets</option>
-			  <option value="lifestyle">🌟 Lifestyle</option>
-			  <option value="gaming">🎮 Gaming</option>
-			  <option value="accessories">🎧 Accessories</option>
-			  <option value="other">📦 Other</option>
-			</select>
-		  </div>
-		  <div class="form-actions">
-			<button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-			<button type="submit" class="btn btn-save">💾 Save</button>
-		  </div>
-		</form>
-	  </div>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h2 id="modalTitle">➕ Add Product</h2>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-group"><label>Product Name *</label><input type="text" id="prodName" required></div>
+                <div class="form-group"><label>Description</label><textarea id="prodDesc" rows="3"></textarea></div>
+                <div class="form-group"><label>Price</label><input type="text" id="prodPrice" placeholder="e.g. $49.99"></div>
+                <div class="form-group"><label>Image URL</label><input type="url" id="prodImage"></div>
+                <div class="form-group"><label>Buy Link *</label><input type="url" id="prodLink" required></div>
+                <div class="form-group"><label>Category</label>
+                    <select id="prodCategory">
+                        <option value="tech">💻 Tech & Gadgets</option>
+                        <option value="lifestyle">🌟 Lifestyle</option>
+                        <option value="gaming">🎮 Gaming</option>
+                        <option value="accessories">🎧 Accessories</option>
+                        <option value="other">📦 Other</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-save">💾 Save</button>
+                </div>
+            </form>
+        </div>
     </div>
     <div id="toastContainer"></div>
     <footer class="footer">
-	  <p>© <span id="currentYear"></span> KmaxRush Admin</p>
+        <p>© <span id="currentYear"></span> KmaxRush Admin</p>
     </footer>
 
-<script>
+    <script>
         const STORAGE_KEY = 'kmaxrush_products';
         let products = [];
         let editingId = null;
 
+        // Load products from localStorage
         function loadProducts() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            products = stored ? JSON.parse(stored) : [];
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                console.log('Loading products from localStorage:', stored);
+                products = stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                console.error('Failed to parse products:', e);
+                products = [];
+            }
+            console.log('Products loaded:', products);
         }
-        function saveProducts() { localStorage.setItem(STORAGE_KEY, JSON.stringify(products)); }
 
+        // Save products to localStorage
+        function saveProducts() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+                console.log('Saved products to localStorage:', products);
+            } catch (e) {
+                console.error('Failed to save products:', e);
+                showToast('Error saving data. Is localStorage full or blocked?', 'error');
+            }
+        }
+
+        // Render the product grid
         function renderProducts() {
+            console.log('Rendering products...');
             const grid = document.getElementById('productGrid');
             const search = document.getElementById('searchInput').value.toLowerCase();
             const cat = document.getElementById('categoryFilter').value;
+
             let filtered = products.filter(p => {
-                const matchSearch = !search || p.name.toLowerCase().includes(search) || (p.description&&p.description.toLowerCase().includes(search));
-                return matchSearch && (cat==='all' || p.category===cat);
+                const matchSearch = !search || p.name.toLowerCase().includes(search) || (p.description && p.description.toLowerCase().includes(search));
+                const matchCat = cat === 'all' || p.category === cat;
+                return matchSearch && matchCat;
             });
-            filtered.sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+            filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             document.getElementById('productCount').textContent = filtered.length + ' product(s)';
 
             if (!filtered.length) {
-                grid.innerHTML = `<div style="text-align:center; padding:60px; grid-column:1/-1;">No products found.</div>`;
+                grid.innerHTML = `<div style="text-align:center; padding:60px; grid-column:1/-1; color:#aaa;">No products found. Add your first product!</div>`;
                 return;
             }
+
             grid.innerHTML = filtered.map(p => {
-                const img = p.image ? `<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.name)}">` : `<div class="card-img-placeholder">📷</div>`;
-                const catEmoji = { tech:'💻', lifestyle:'🌟', gaming:'🎮', accessories:'🎧', other:'📦' }[p.category]||'📦';
+                const catEmoji = { tech:'💻', lifestyle:'🌟', gaming:'🎮', accessories:'🎧', other:'📦' }[p.category] || '📦';
+                // Use a simple placeholder if no image
+                const imgHTML = p.image
+                    ? `<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.name)}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'card-img-placeholder\\'>📷</div>'">`
+                    : `<div class="card-img-placeholder">📷</div>`;
                 return `
                 <div class="product-card">
-                    <div class="card-img-wrap">${img}<span class="card-category-tag">${catEmoji} ${p.category||'Other'}</span></div>
+                    <div class="card-img-wrap">${imgHTML}<span class="card-category-tag">${catEmoji} ${p.category || 'Other'}</span></div>
                     <div class="card-body">
                         <h3>${escapeHTML(p.name)}</h3>
-                        ${p.description?`<p class="desc">${escapeHTML(p.description)}</p>`:''}
-                        ${p.price?`<div class="price">${escapeHTML(p.price)}</div>`:''}
+                        ${p.description ? `<p class="desc">${escapeHTML(p.description)}</p>` : ''}
+                        ${p.price ? `<div class="price">${escapeHTML(p.price)}</div>` : ''}
                     </div>
                     <div class="card-actions">
                         <a href="${escapeHTML(p.link)}" target="_blank" class="btn-buy">🛒 Buy</a>
@@ -208,21 +230,23 @@
             }).join('');
         }
 
+        // Open modal for adding
         function openAddModal() {
+            console.log('Opening add modal');
             editingId = null;
             document.getElementById('modalTitle').textContent = '➕ Add Product';
-            document.getElementById('productId').value = '';
-            document.getElementById('prodName').value = '';
-            document.getElementById('prodDesc').value = '';
-            document.getElementById('prodPrice').value = '';
-            document.getElementById('prodImage').value = '';
-            document.getElementById('prodLink').value = '';
-            document.getElementById('prodCategory').value = 'tech';
+            document.getElementById('productForm').reset();
             document.getElementById('modalOverlay').style.display = 'flex';
         }
+
+        // Open modal for editing
         function openEditModal(id) {
-            const p = products.find(p => p.id === id);
-            if(!p) return;
+            console.log('Opening edit modal for', id);
+            const p = products.find(prod => prod.id === id);
+            if (!p) {
+                showToast('Product not found', 'error');
+                return;
+            }
             editingId = id;
             document.getElementById('modalTitle').textContent = '✏️ Edit Product';
             document.getElementById('productId').value = p.id;
@@ -234,68 +258,101 @@
             document.getElementById('prodCategory').value = p.category || 'tech';
             document.getElementById('modalOverlay').style.display = 'flex';
         }
-        function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-        function previewImage() {} // optional
 
-        function saveProduct(e) {
+        // Close modal
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+        // Handle form submission
+        document.getElementById('productForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Form submitted');
+
             const name = document.getElementById('prodName').value.trim();
             const link = document.getElementById('prodLink').value.trim();
-            if(!name || !link) return showToast('Name and link required', 'error');
-            const data = {
-                id: editingId || 'prod_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),
-                name,
+
+            if (!name || !link) {
+                showToast('Product name and buy link are required.', 'error');
+                return;
+            }
+
+            const productData = {
+                id: editingId || 'prod_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                name: name,
                 description: document.getElementById('prodDesc').value.trim(),
                 price: document.getElementById('prodPrice').value.trim(),
                 image: document.getElementById('prodImage').value.trim(),
-                link,
+                link: link,
                 category: document.getElementById('prodCategory').value,
-                createdAt: editingId ? (products.find(p=>p.id===editingId)?.createdAt || Date.now()) : Date.now(),
+                createdAt: editingId ? (products.find(p => p.id === editingId)?.createdAt || Date.now()) : Date.now(),
                 updatedAt: Date.now()
             };
-            if(editingId) {
-                const idx = products.findIndex(p=>p.id===editingId);
-                if(idx>=0) products[idx] = data;
-                showToast('Product updated', 'success');
+
+            console.log('Product data to save:', productData);
+
+            if (editingId) {
+                const index = products.findIndex(p => p.id === editingId);
+                if (index >= 0) {
+                    products[index] = productData;
+                    showToast('✅ Product updated!', 'success');
+                } else {
+                    showToast('Error: product not found for editing.', 'error');
+                    return;
+                }
             } else {
-                products.unshift(data);
-                showToast('Product added', 'success');
+                products.unshift(productData);
+                showToast('🎉 Product added!', 'success');
             }
+
             saveProducts();
             closeModal();
             renderProducts();
-        }
+        });
 
+        // Delete product
         function deleteProduct(id) {
-            const p = products.find(p=>p.id===id);
-            if(p && confirm(`Delete "${p.name}"?`)) {
-                products = products.filter(p=>p.id!==id);
+            const p = products.find(prod => prod.id === id);
+            if (p && confirm(`Delete "${p.name}"?`)) {
+                products = products.filter(prod => prod.id !== id);
                 saveProducts();
                 renderProducts();
-                showToast('Deleted', 'error');
+                showToast('🗑️ Product deleted.', 'error');
             }
         }
 
-        function showToast(msg, type) {
+        // Toast messages
+        function showToast(message, type) {
+            console.log('Toast:', message);
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.className = 'toast '+type;
-            toast.textContent = msg;
+            toast.className = 'toast ' + (type || '');
+            toast.textContent = message;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => {
+                if (toast.parentNode) toast.remove();
+            }, 3000);
         }
 
+        // Simple escape
         function escapeHTML(str) {
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
         }
 
-        window.onload = () => {
+        // Close modal if clicking outside of it
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
             document.getElementById('currentYear').textContent = new Date().getFullYear();
             loadProducts();
             renderProducts();
-        };
-</script>
-  </body>
+            console.log('Admin panel ready. Products count:', products.length);
+        });
+    </script>
+</body>
 </html>
